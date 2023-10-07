@@ -1,3 +1,91 @@
-<p>
-  nested-table works!
-</p>
+<div class="container">
+  <div class="input-group mb-3">
+    <input
+      type="text"
+      [(ngModel)]="searchText"
+      (input)="onSearch()"
+      class="form-control mt-4"
+      placeholder="Name"
+    />
+    <div class="input-group-append">
+      <button class="btn btn-outline-secondary mt-4" type="button">
+        <i class="bi bi-search"></i>
+      </button>
+    </div>
+  </div>
+  <table class="table">
+    <thead>
+      <tr>
+        <th>
+          <input type="checkbox" (change)="toggleSelectAll()" />
+        </th>
+        <th>
+          <span (click)="toggleSelectAll()" style="cursor: pointer">
+            <i
+              [class]="selectAll ? 'bi bi-chevron-down' : 'bi bi-chevron-right'"
+            ></i>
+          </span>
+          Name
+        </th>
+        <th appColumnResize>Type</th>
+        <th appColumnResize>Email</th>
+        <th appColumnResize>Phone Number</th>
+        <th appColumnResize>Company Name</th>
+      </tr>
+      <tr *ngIf="isAnyRowSelected()">
+        <th colspan="6">
+          <button class="btn btn-danger" (click)="deleteSelectedRows()">
+            Delete multiple
+          </button>
+        </th>
+      </tr>
+    </thead>
+    <tbody>
+      <ng-container *ngFor="let row of tableData; let i = index">
+        <tr
+          [ngClass]="{ 'table-secondary': row.selected }"
+          (click)="toggleRow(row)"
+          [hidden]="row.hidden"
+        >
+          <td>
+            <input
+              type="checkbox"
+              [(ngModel)]="row.selected"
+              (click)="$event.stopPropagation()"
+            />
+          </td>
+          <td>
+            <span
+              (click)="$event.stopPropagation(); toggleRow(row)"
+              style="cursor: pointer"
+            >
+              <i
+                [class]="
+                  row.expanded ? 'bi bi-chevron-down' : 'bi bi-chevron-right'
+                "
+              ></i>
+            </span>
+            {{ row.name }}
+            <div *ngIf="i === 0" class="hover-buttons">
+              <button class="btn btn-danger">Delete</button>
+              <button class="btn btn-primary">Edit</button>
+            </div>
+          </td>
+          <td>{{ row.type }}</td>
+          <td>{{ row.email }}</td>
+          <td>{{ row.phoneNumber }}</td>
+          <td>{{ row.companyName }}</td>
+        </tr>
+        <tr *ngIf="row.expanded">
+          <td colspan="6">
+            <!-- Nested table (reuse the same NestedTableComponent) -->
+            <app-nested-table></app-nested-table>
+            <div class="hover-buttons">
+              <button class="btn btn-danger">Delete</button>
+            </div>
+          </td>
+        </tr>
+      </ng-container>
+    </tbody>
+  </table>
+</div>
